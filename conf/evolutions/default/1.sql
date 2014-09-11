@@ -1,170 +1,150 @@
+# --- Created by Ebean DDL
+# To stop Ebean DDL generation, remove this comment and start using Evolutions
 
 # --- !Ups
 
-CREATE TABLE User (
-    id bigint(20) NOT NULL AUTO_INCREMENT,
-    email varchar(255) NOT NULL,
-    password varchar(255) NOT NULL,
-    fullname varchar(255) NOT NULL,
-    isAdmin boolean NOT NULL,
-    PRIMARY KEY (id)
-);
+create table game (
+  id                        integer auto_increment not null,
+  week_id                   integer,
+  away_abrv                 varchar(3),
+  home_abrv                 varchar(3),
+  winner_abrv               varchar(3),
+  kickoff                   datetime,
+  time_left                 integer,
+  tie                       tinyint(1) default 0,
+  constraint pk_game primary key (id))
+;
 
-CREATE TABLE GAMEDATA (
-  GAMEID int(10) unsigned NOT NULL AUTO_INCREMENT,
-  WEEK int(10) unsigned NOT NULL,
-  SEASON int(11) unsigned NOT NULL,
-  AWAY int(11) unsigned NOT NULL,
-  HOME int(11) unsigned NOT NULL,
-  WINNER int(11) NOT NULL,
-  KICKOFF bigint(20) unsigned NOT NULL,
-  TIMELEFT int(11) NOT NULL,
-  TIE int(2) unsigned NOT NULL COMMENT 'True or false if game was tie at end of 4 qtrs',
-  PRIMARY KEY (GAMEID)
-);
+create table payment (
+  payment_id                integer auto_increment not null,
+  amount                    decimal(38),
+  notes                     varchar(255),
+  created_on                datetime,
+  constraint pk_payment primary key (payment_id))
+;
 
-CREATE TABLE INFO (
-  ID int(11) NOT NULL AUTO_INCREMENT,
-  CURRENTWEEK int(11) NOT NULL,
-  CURRENTSEASON int(11) NOT NULL,
-  PRIMARY KEY (ID)
-);
+create table payout (
+  payment_id                integer auto_increment not null,
+  amount                    decimal(38),
+  notes                     varchar(255),
+  created_on                datetime,
+  constraint pk_payout primary key (payment_id))
+;
 
-CREATE TABLE options (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  ques_id int(11) NOT NULL,
-  value varchar(300) NOT NULL,
-  PRIMARY KEY (id)
-);
+create table pick (
+  id                        integer auto_increment not null,
+  winner_abrv               varchar(3),
+  created_on                date,
+  constraint pk_pick primary key (id))
+;
 
-CREATE TABLE PAYMENTS (
-  CREATEDON timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  id int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID to identify the payment',
-  uid varchar(33) NOT NULL COMMENT 'UID of the person who paid',
-  TYPE int(10) unsigned NOT NULL COMMENT 'Type of trans (cash, check)',
-  AMOUNT decimal(10,2) unsigned NOT NULL COMMENT 'Amount of payment',
-  SEASON int(4) NOT NULL,
-  COLLECTEDBY varchar(33) NOT NULL COMMENT 'Who collected the money',
-  NOTES varchar(100) DEFAULT NULL COMMENT 'Notes about the payment',
-  PRIMARY KEY (id)
-);
+create table score (
+  id                        integer auto_increment not null,
+  team_abrv                 varchar(3),
+  game_id                   integer,
+  score                     integer,
+  possession                tinyint(1) default 0,
+  redzone                   tinyint(1) default 0,
+  spread                    decimal(2),
+  constraint pk_score primary key (id))
+;
 
-CREATE TABLE PAYOUTS (
-  CREATEDON timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  id int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID to identify the payment',
-  uid varchar(33) NOT NULL COMMENT 'UID of the person who paid',
-  TYPE int(10) unsigned NOT NULL COMMENT 'Type of trans (cash, check)',
-  AMOUNT decimal(10,2) unsigned NOT NULL COMMENT 'Amount of payment',
-  SEASON int(4) NOT NULL,
-  PAIDBY varchar(33) NOT NULL COMMENT 'Who collected the money',
-  NOTES varchar(100) DEFAULT NULL COMMENT 'Notes about the payment',
-  PRIMARY KEY (id)
-);
+create table season (
+  season                    integer auto_increment not null,
+  constraint pk_season primary key (season))
+;
 
-CREATE TABLE questions (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  ques text NOT NULL,
-  created_on datetime NOT NULL,
-  PRIMARY KEY (id)
-);
+create table team (
+  abrv                      varchar(3) not null,
+  name                      varchar(50),
+  shortname                 varchar(30),
+  jokename                  varchar(30),
+  wins                      integer,
+  losses                    integer,
+  constraint pk_team primary key (abrv))
+;
 
-CREATE TABLE TEAMINFO (
-  TEAMID int(11) NOT NULL AUTO_INCREMENT,
-  ABRV varchar(3) NOT NULL,
-  TEAMNAME varchar(50) NOT NULL,
-  SHORTNAME varchar(20) NOT NULL,
-  JOKENAME varchar(50) NOT NULL,
-  WINS int(11) NOT NULL DEFAULT '0',
-  LOSSES int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (TEAMID)
-);
+create table team_rank (
+  id                        integer auto_increment not null,
+  rush_offense              integer,
+  pass_offense              integer,
+  rush_defense              integer,
+  pass_defense              integer,
+  constraint pk_team_rank primary key (id))
+;
 
-CREATE TABLE TEAMRANKINGS (
-  GAMEID int(11) NOT NULL,
-  TEAMID int(11) NOT NULL,
-  RUSHOFFENSERANK int(11) NOT NULL DEFAULT '0',
-  RUSHDEFENSERANK int(11) NOT NULL DEFAULT '0',
-  PASSOFFENSERANK int(11) NOT NULL DEFAULT '0',
-  PASSDEFENSERANK int(11) NOT NULL DEFAULT '0'
-);
+create table user (
+  id                        bigint auto_increment not null,
+  name                      varchar(100),
+  email                     varchar(255),
+  finalize                  tinyint(1) default 0,
+  is_admin                  tinyint(1) default 0,
+  created_on                datetime,
+  last_login                datetime,
+  constraint pk_user primary key (id))
+;
 
-CREATE TABLE TEAMSCORES (
-  SCOREID int(10) unsigned NOT NULL AUTO_INCREMENT,
-  GAMEID int(10) unsigned NOT NULL,
-  TEAMID int(10) unsigned NOT NULL,
-  SCORE int(10) unsigned NOT NULL DEFAULT '0',
-  haspossession tinyint(1) NOT NULL DEFAULT '0',
-  inredzone tinyint(1) NOT NULL DEFAULT '0',
-  spread decimal(10,1) DEFAULT NULL,
-  PRIMARY KEY (SCOREID)
-);
+create table week (
+  id                        integer auto_increment not null,
+  week                      integer,
+  season_season             integer,
+  constraint pk_week primary key (id))
+;
 
-CREATE TABLE USERPICKS (
-  PICKID int(10) unsigned NOT NULL AUTO_INCREMENT,
-  UID varchar(33) NOT NULL,
-  GAMEID int(10) unsigned NOT NULL,
-  WINNER int(10) unsigned NOT NULL,
-  CREATEDON timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (PICKID)
-);
+create table winner (
+  id                        integer auto_increment not null,
+  place                     integer,
+  payout                    float,
+  week_id                   integer,
+  constraint pk_winner primary key (id))
+;
 
-CREATE TABLE USERS (
-  id varchar(75) NOT NULL,
-  name varchar(50) DEFAULT NULL,
-  source varchar(25) DEFAULT NULL,
-  photo varchar(125) DEFAULT 'http://picks.deep-think.net/photo.jpg',
-  EMAIL varchar(100) NOT NULL DEFAULT 'admin@deep-think.net',
-  FINALIZE tinyint(2) NOT NULL DEFAULT '0',
-  admin tinyint(4) DEFAULT '0',
-  ALTID varchar(33) DEFAULT NULL COMMENT 'If a user has more than one account to login with, resolve this account to another',
-  CREATEDON timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  LASTLOGIN timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (id)
-);
+alter table game add constraint fk_game_week_1 foreign key (week_id) references week (id) on delete restrict on update restrict;
+create index ix_game_week_1 on game (week_id);
+alter table game add constraint fk_game_away_2 foreign key (away_abrv) references team (abrv) on delete restrict on update restrict;
+create index ix_game_away_2 on game (away_abrv);
+alter table game add constraint fk_game_home_3 foreign key (home_abrv) references team (abrv) on delete restrict on update restrict;
+create index ix_game_home_3 on game (home_abrv);
+alter table game add constraint fk_game_winner_4 foreign key (winner_abrv) references team (abrv) on delete restrict on update restrict;
+create index ix_game_winner_4 on game (winner_abrv);
+alter table pick add constraint fk_pick_winner_5 foreign key (winner_abrv) references team (abrv) on delete restrict on update restrict;
+create index ix_pick_winner_5 on pick (winner_abrv);
+alter table score add constraint fk_score_team_6 foreign key (team_abrv) references team (abrv) on delete restrict on update restrict;
+create index ix_score_team_6 on score (team_abrv);
+alter table score add constraint fk_score_game_7 foreign key (game_id) references game (id) on delete restrict on update restrict;
+create index ix_score_game_7 on score (game_id);
+alter table week add constraint fk_week_season_8 foreign key (season_season) references season (season) on delete restrict on update restrict;
+create index ix_week_season_8 on week (season_season);
+alter table winner add constraint fk_winner_week_9 foreign key (week_id) references week (id) on delete restrict on update restrict;
+create index ix_winner_week_9 on winner (week_id);
 
-CREATE TABLE USERSTATS (
-  UID varchar(33) NOT NULL,
-  `1ST` int(10) unsigned NOT NULL DEFAULT '0',
-  `2ND` int(10) unsigned NOT NULL DEFAULT '0',
-  `3RD` int(10) unsigned NOT NULL DEFAULT '0',
-  CORRECTPICKS int(10) unsigned NOT NULL DEFAULT '0',
-  OVERALLPICKS int(10) unsigned NOT NULL DEFAULT '0',
-  WEEKSPLAYED int(10) unsigned NOT NULL DEFAULT '0',
-  TOTALPLACE decimal(20,2) unsigned NOT NULL DEFAULT '0.00',
-  SEASON int(10) unsigned NOT NULL
-);
 
-CREATE TABLE votes (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  ques_id int(11) NOT NULL,
-  option_id int(11) NOT NULL,
-  voted_on datetime NOT NULL,
-  uid varchar(33) NOT NULL,
-  PRIMARY KEY (id)
-) ;
-
-CREATE TABLE WINNERS (
-  WINNERID int(11) NOT NULL AUTO_INCREMENT,
-  uid varchar(33) NOT NULL,
-  PLACE int(5) NOT NULL,
-  PAYOUT decimal(65,2) NOT NULL,
-  WEEK int(11) NOT NULL,
-  SEASON int(10) unsigned NOT NULL,
-  PRIMARY KEY (WINNERID)
-);
 
 # --- !Downs
 
-DROP TABLE USERS;
-DROP TABLE WINNERS;
-DROP TABLE GAMEDATA;
-DROP TABLE USERPICKS;
-DROP TABLE USERSTATS;
-DROP TABLE votes;
-DROP TABLE questions;
-DROP TABLE options;
-DROP TABLE PAYMENTS;
-DROP TABLE PAYOUTS;
-DROP TABLE TEAMINFO;
-DROP TABLE TEAMRANKINGS;
-DROP TABLE TEAMSCORES;
+SET FOREIGN_KEY_CHECKS=0;
+
+drop table game;
+
+drop table payment;
+
+drop table payout;
+
+drop table pick;
+
+drop table score;
+
+drop table season;
+
+drop table team;
+
+drop table team_rank;
+
+drop table user;
+
+drop table week;
+
+drop table winner;
+
+SET FOREIGN_KEY_CHECKS=1;
+
